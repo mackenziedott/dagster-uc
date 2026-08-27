@@ -534,7 +534,7 @@ class DagsterUserCodeHandler:
         )
         return len(running_pods) > 0
 
-    def acquire_semaphore(self, reset_lock: bool = False) -> bool:
+    def acquire_semaphore(self, reset_lock: bool = False, name: str | None = None) -> bool:
         """Acquires a semaphore by creating a configmap"""
         if reset_lock:
             try:
@@ -556,7 +556,7 @@ class DagsterUserCodeHandler:
             if semaphore.data.get("locked") == "true":
                 return False
             else:
-                semaphore.patch({"data": {"locked": "true"}})
+                semaphore.patch({"data": {"locked": "true", "locker": name}})
                 return True
         except kr8s.NotFoundError:
             # Create semaphore if it does not exist
@@ -566,11 +566,23 @@ class DagsterUserCodeHandler:
                         "name": self.config.dagster_chart_config.deployment_semaphore_name,
                         "namespace": self.config.kubernetes_config.namespace,
                     },
-                    "data": {"locked": "true"},
+                    "data": {"locked": "true", "locker": name},
                 },
                 api=self.api,
             ).create()
             return True
+
+    def acquire_semaphore_locker(self) -> str:
+        """Acquire who locked a semaphore"""
+        semaphore = ConfigMap.get(
+            self.config.dagster_chart_config.deployment_semaphore_name,
+            namespace=self.config.kubernetes_config.namespace,
+            api=self.api,
+        )
+        if semaphore.data.get("locker") is not None:
+            return semaphore.data.get("locker")
+        else:
+            return "Unknown Locking Deployment"
 
     def release_semaphore(self) -> None:
         """Releases the semaphore lock"""

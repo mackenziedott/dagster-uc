@@ -435,9 +435,9 @@ def deployment_deploy(
             else:
                 raise ValueError(f"{eea} is not in key=value format")
     count = 0
-    while not handler.acquire_semaphore(reset_lock):
+    while not handler.acquire_semaphore(reset_lock, name=deployment_name):
         logger.error(
-            f"Attempt {count}: Another deployment is in progress. Trying again in 10 seconds. You can force a reset of the deployment lock by using 'dagster-uc deployment deploy --reset-lock'",
+            f"Attempt {count}: {handler.acquire_semaphore_locker()} is in progress. Trying again in 10 seconds. You can force a reset of the deployment lock by using 'dagster-uc deployment deploy --reset-lock'",
         )
         count += 1
         time.sleep(10)
