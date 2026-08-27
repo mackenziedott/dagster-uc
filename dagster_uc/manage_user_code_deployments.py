@@ -434,6 +434,18 @@ def deployment_deploy(
                 )
             else:
                 raise ValueError(f"{eea} is not in key=value format")
+    if deployment_name:
+        (deployment_name, branch_name) = (deployment_name, deployment_name)
+    else:
+        dagster_deployment = handler.get_deployment_name(
+            deployment_name_suffix,
+            use_project_name=config.use_project_name,
+            project_name_override=config.project_name_override,
+        )
+        (deployment_name, branch_name) = (
+            dagster_deployment.full_name,
+            dagster_deployment.branch_name,
+        )
     count = 0
     while not handler.acquire_semaphore(reset_lock, name=deployment_name):
         logger.error(
@@ -448,18 +460,6 @@ def deployment_deploy(
             raise Exception("Podman installation is required to run dagster-uc.")
 
         logger.debug("Using 'podman' to build image.")
-        if deployment_name:
-            (deployment_name, branch_name) = (deployment_name, deployment_name)
-        else:
-            dagster_deployment = handler.get_deployment_name(
-                deployment_name_suffix,
-                use_project_name=config.use_project_name,
-                project_name_override=config.project_name_override,
-            )
-            (deployment_name, branch_name) = (
-                dagster_deployment.full_name,
-                dagster_deployment.branch_name,
-            )
 
         logger.debug("Determining tag...")
         new_tag = gen_tag(
