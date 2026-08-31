@@ -573,7 +573,7 @@ class DagsterUserCodeHandler:
             return True
 
     def acquire_semaphore_locker(self) -> str:
-        """Acquire who locked a semaphore"""
+        """Acquire which deployment locked a semaphore"""
         semaphore = ConfigMap.get(
             self.config.dagster_chart_config.deployment_semaphore_name,
             namespace=self.config.kubernetes_config.namespace,
