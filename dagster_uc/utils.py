@@ -205,7 +205,7 @@ def build_and_push(
     for env_var in build_envs:
         cmd.extend(["--env", env_var])
     for build_var in build_args:
-        cmd.extend(["--build-arg="+build_var])
+        cmd.extend(["--build-arg=" + build_var])
     if use_sudo:
         cmd = ["sudo"] + cmd
 
