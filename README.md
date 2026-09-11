@@ -56,6 +56,8 @@ defaults:
     docker_env_vars:
       - FOO
       - FOO='string'
+    docker_build_args:
+      - BAR='string'
     image_prefix: "example"
     use_az_login: True
     container_registry_chart_path: "helm/dagster/dagster-user-deployments"
