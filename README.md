@@ -122,6 +122,7 @@ Notes on common config keys (now nested):
 * `docker.container_registry` — target container registry for the built image (per-environment override).
 * `docker.image_prefix` — prefix used when naming images.
 * `docker.docker_env_vars` — list of environment variables to pass into the build process.
+* `docker.docker_build_args` - list of build arguments to pass into the build process. 
 * `docker.use_az_login` — set to `True` if you need to log in to Azure before pushing images.
 * `kubernetes.context` — the kube context to use for deployments in that environment.
 * `kubernetes.namespace` — the namespace where Dagster and user deployments live.
